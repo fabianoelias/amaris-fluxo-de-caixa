@@ -1,31 +1,55 @@
 ﻿@model FluxoDeCaixa.Models.Caixa
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>Detalhes</h1>
 
 <div>
-    <h4>Caixa</h4>
+    <h4>Caixa @Model.Id - <a asp-action="Create" asp-controller="Movimentos" asp-route-id="@Model?.Id">Movimentar</a> </h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Saldo)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Saldo)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Status)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Status.Nome)
         </dd>
     </dl>
 </div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Cadastro</th>
+            <th>Valor</th>
+            <th>Motivo</th>
+            <th>Sucesso</th>
+            <th>Detalhe</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.Movimentos)
+        {
+            <tr>
+                <td>@item.Cadastro</td>
+                <td>@item.Valor</td>
+                <td>@item.Motivo</td>
+                <td>@item.Sucesso</td>
+                <td>@item.Detalhe</td>
+            </tr>
+        }
+    </tbody>
+</table>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+    <a asp-action="Index">Voltar para lista</a>
 </div>

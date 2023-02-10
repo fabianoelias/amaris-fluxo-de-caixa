@@ -19,7 +19,7 @@ namespace FluxoDeCaixa.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = db.Caixa.Include(c => c.Status);
+            var applicationDbContext = db.Caixa.Include(c => c.Status).OrderByDescending(item => item.Id);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -37,6 +37,8 @@ namespace FluxoDeCaixa.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.Movimentos = db.Movimento.Where(item => item.CaixaId == id).OrderByDescending(item => item.Cadastro).ToList();
 
             return View(caixa);
         }
