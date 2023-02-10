@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FluxoDeCaixa.Data;
 using FluxoDeCaixa.Models;
@@ -7,77 +8,80 @@ using Microsoft.AspNetCore.Authorization;
 namespace FluxoDeCaixa.Controllers
 {
     [Authorize]
-    public class StatusController : Controller
+    public class CaixasController : Controller
     {
         private readonly ApplicationDbContext db;
 
-        public StatusController(ApplicationDbContext context)
+        public CaixasController(ApplicationDbContext context)
         {
             db = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            return db.Status != null ?
-                        View(await db.Status.ToListAsync()) :
-                        Problem("Entity set 'ApplicationDbContext.Status'  is null.");
+            var applicationDbContext = db.Caixa.Include(c => c.Status);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || db.Status == null)
+            if (id == null || db.Caixa == null)
             {
                 return NotFound();
             }
 
-            var status = await db.Status
-                .FirstOrDefaultAsync(m => m.StatusId == id);
-            if (status == null)
+            var caixa = await db.Caixa
+                .Include(c => c.Status)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (caixa == null)
             {
                 return NotFound();
             }
 
-            return View(status);
+            return View(caixa);
         }
 
         public IActionResult Create()
         {
+            ViewData["StatusId"] = new SelectList(db.Status, "StatusId", "Nome");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StatusId,Nome")] Status status)
+        public async Task<IActionResult> Create([Bind("Id,Saldo,StatusId")] Caixa caixa)
         {
             if (ModelState.IsValid)
             {
-                db.Add(status);
+                db.Add(caixa);
                 await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(status);
+            ViewData["StatusId"] = new SelectList(db.Status, "StatusId", "Nome", caixa.StatusId);
+            return View(caixa);
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || db.Status == null)
+            if (id == null || db.Caixa == null)
             {
                 return NotFound();
             }
 
-            var status = await db.Status.FindAsync(id);
-            if (status == null)
+            var caixa = await db.Caixa.FindAsync(id);
+            if (caixa == null)
             {
                 return NotFound();
             }
-            return View(status);
+            ViewData["StatusId"] = new SelectList(db.Status, "StatusId", "Nome", caixa.StatusId);
+            return View(caixa);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StatusId,Nome")] Status status)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Saldo,StatusId")] Caixa caixa)
         {
-            if (id != status.StatusId)
+            if (id != caixa.Id)
             {
                 return NotFound();
             }
@@ -86,12 +90,12 @@ namespace FluxoDeCaixa.Controllers
             {
                 try
                 {
-                    db.Update(status);
+                    db.Update(caixa);
                     await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StatusExists(status.StatusId))
+                    if (!CaixaExists(caixa.Id))
                     {
                         return NotFound();
                     }
@@ -102,47 +106,49 @@ namespace FluxoDeCaixa.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(status);
+            ViewData["StatusId"] = new SelectList(db.Status, "StatusId", "Nome", caixa.StatusId);
+            return View(caixa);
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || db.Status == null)
+            if (id == null || db.Caixa == null)
             {
                 return NotFound();
             }
 
-            var status = await db.Status
-                .FirstOrDefaultAsync(m => m.StatusId == id);
-            if (status == null)
+            var caixa = await db.Caixa
+                .Include(c => c.Status)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (caixa == null)
             {
                 return NotFound();
             }
 
-            return View(status);
+            return View(caixa);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (db.Status == null)
+            if (db.Caixa == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Status'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Caixa'  is null.");
             }
-            var status = await db.Status.FindAsync(id);
-            if (status != null)
+            var caixa = await db.Caixa.FindAsync(id);
+            if (caixa != null)
             {
-                db.Status.Remove(status);
+                db.Caixa.Remove(caixa);
             }
 
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StatusExists(int id)
+        private bool CaixaExists(int id)
         {
-            return (db.Status?.Any(e => e.StatusId == id)).GetValueOrDefault();
+            return (db.Caixa?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

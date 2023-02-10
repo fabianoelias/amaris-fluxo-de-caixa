@@ -2,38 +2,40 @@
 using Microsoft.EntityFrameworkCore;
 using FluxoDeCaixa.Data;
 using FluxoDeCaixa.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FluxoDeCaixa.API
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class StatusController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext db;
 
         public StatusController(ApplicationDbContext context)
         {
-            _context = context;
+            db = context;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Status>>> GetStatus()
         {
-          if (_context.Status == null)
+          if (db.Status == null)
           {
               return NotFound();
           }
-            return await _context.Status.ToListAsync();
+            return await db.Status.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Status>> GetStatus(int id)
         {
-          if (_context.Status == null)
+          if (db.Status == null)
           {
               return NotFound();
           }
-            var status = await _context.Status.FindAsync(id);
+            var status = await db.Status.FindAsync(id);
 
             if (status == null)
             {
@@ -46,16 +48,16 @@ namespace FluxoDeCaixa.API
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStatus(int id, Status status)
         {
-            if (id != status.Id)
+            if (id != status.StatusId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(status).State = EntityState.Modified;
+            db.Entry(status).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -75,38 +77,38 @@ namespace FluxoDeCaixa.API
         [HttpPost]
         public async Task<ActionResult<Status>> PostStatus(Status status)
         {
-          if (_context.Status == null)
+          if (db.Status == null)
           {
               return Problem("Entity set 'ApplicationDbContext.Status'  is null.");
           }
-            _context.Status.Add(status);
-            await _context.SaveChangesAsync();
+            db.Status.Add(status);
+            await db.SaveChangesAsync();
 
-            return CreatedAtAction("GetStatus", new { id = status.Id }, status);
+            return CreatedAtAction("GetStatus", new { id = status.StatusId }, status);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStatus(int id)
         {
-            if (_context.Status == null)
+            if (db.Status == null)
             {
                 return NotFound();
             }
-            var status = await _context.Status.FindAsync(id);
+            var status = await db.Status.FindAsync(id);
             if (status == null)
             {
                 return NotFound();
             }
 
-            _context.Status.Remove(status);
-            await _context.SaveChangesAsync();
+            db.Status.Remove(status);
+            await db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool StatusExists(int id)
         {
-            return (_context.Status?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (db.Status?.Any(e => e.StatusId == id)).GetValueOrDefault();
         }
     }
 }

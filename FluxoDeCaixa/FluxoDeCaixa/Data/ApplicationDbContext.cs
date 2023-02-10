@@ -12,5 +12,7 @@ namespace FluxoDeCaixa.Data
             : base(options)
         {
         }
+
+        public DbSet<FluxoDeCaixa.Models.Caixa> Caixa { get; set; } = default!;
     }
 }

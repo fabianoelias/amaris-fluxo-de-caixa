@@ -7,7 +7,7 @@ namespace FluxoDeCaixa.Models
     {
         [Required]
         [SwaggerSchema(ReadOnly = true)]
-        public int Id { get; set; }
+        public int StatusId { get; set; }
 
         [Required]
         [StringLength(200)]
