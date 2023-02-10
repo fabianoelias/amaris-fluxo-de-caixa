@@ -33,5 +33,8 @@ namespace FluxoDeCaixa.Models
         [ForeignKey("CaixaId")]
         [SwaggerSchema(ReadOnly = true)]
         public virtual Caixa? Caixa { get; set; }
+
+        [Required]
+        public DateTime Cadastro { get; set; }
     }
 }

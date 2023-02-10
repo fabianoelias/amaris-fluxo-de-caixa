@@ -49,7 +49,7 @@ namespace FluxoDeCaixa.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MovimentoId,Valor,Sucesso,Motivo,Detalhe,CaixaId")] Movimento movimento)
+        public async Task<IActionResult> Create([Bind("MovimentoId,Valor,Sucesso,Motivo,Detalhe,CaixaId,Cadastro")] Movimento movimento)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace FluxoDeCaixa.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MovimentoId,Valor,Sucesso,Motivo,Detalhe,CaixaId")] Movimento movimento)
+        public async Task<IActionResult> Edit(int id, [Bind("MovimentoId,Valor,Sucesso,Motivo,Detalhe,CaixaId,Cadastro")] Movimento movimento)
         {
             if (id != movimento.MovimentoId)
             {

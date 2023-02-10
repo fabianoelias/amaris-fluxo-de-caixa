@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FluxoDeCaixa.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230210202737_Movimento")]
+    [Migration("20230210204347_Movimento")]
     partial class Movimento
     {
         /// <inheritdoc />
@@ -53,6 +53,9 @@ namespace FluxoDeCaixa.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovimentoId"));
+
+                    b.Property<DateTime>("Cadastro")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("CaixaId")
                         .HasColumnType("int");

@@ -51,6 +51,9 @@ namespace FluxoDeCaixa.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovimentoId"));
 
+                    b.Property<DateTime>("Cadastro")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CaixaId")
                         .HasColumnType("int");
 
