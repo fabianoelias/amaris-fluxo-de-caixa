@@ -7,12 +7,12 @@ namespace FluxoDeCaixa.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<Status> Status { get; set; }
+        public DbSet<Caixa> Caixa { get; set; }
+        public DbSet<Movimento> Movimento { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-
-        public DbSet<FluxoDeCaixa.Models.Caixa> Caixa { get; set; } = default!;
     }
 }

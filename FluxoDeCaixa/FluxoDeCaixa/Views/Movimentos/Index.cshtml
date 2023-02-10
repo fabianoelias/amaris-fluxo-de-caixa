@@ -1,0 +1,60 @@
+﻿@model IEnumerable<FluxoDeCaixa.Models.Movimento>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Valor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sucesso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Motivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Detalhe)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Caixa)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Valor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sucesso)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Motivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Detalhe)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Caixa.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MovimentoId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MovimentoId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MovimentoId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
