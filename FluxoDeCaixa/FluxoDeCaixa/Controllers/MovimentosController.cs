@@ -52,80 +52,46 @@ namespace FluxoDeCaixa.Controllers
         public async Task<IActionResult> Create([Bind("MovimentoId,Valor,Sucesso,Motivo,Detalhe,CaixaId,Cadastro")] Movimento movimento)
         {
             var caixa = db.Caixa.Find(movimento.CaixaId);
-
-            if (movimento.Valor < 0)
+            if (caixa is null)
             {
-                if (caixa != null)
-                {
-                    caixa.Status = db.Status.Find(caixa.StatusId);
-
-                    if (caixa.Status != null)
-                    {
-                        if (caixa.Status.Nome.Equals("Aberto"))
-                        {
-                            if (caixa.Saldo >= (movimento.Valor * -1))
-                            {
-                                caixa.Saldo += movimento.Valor;
-
-                                db.Caixa.Update(caixa);
-                                db.SaveChanges();
-
-                                movimento.Detalhe = $"Valor {movimento.Valor} debitado com sucesso";
-                                movimento.Sucesso = true;
-                            }
-                            else
-                            {
-                                movimento.Detalhe = $"Valor a debitar {movimento.Valor * -1} maior que o Saldo {caixa.Saldo}";
-                                movimento.Sucesso = false;
-                            }
-                        }
-                        else
-                        {
-                            movimento.Detalhe = $"Caixa {caixa.Status.Nome}";
-
-                            movimento.Sucesso = false;
-                        }
-                    }
-                }
+                return NotFound();
+            }
+            var status = db.Status.Find(caixa.StatusId);
+            if (status is null)
+            {
+                return NotFound();
+            }
+            if (status.Nome.Equals("Fechado"))
+            {
+                movimento.Detalhe = $"Caixa {status.Nome}";
+                movimento.Sucesso = false;
             }
             else
             {
-                if (caixa != null)
+                var saldo = caixa.Saldo;
+                saldo += movimento.Valor;
+                if (saldo < 0)
                 {
-                    caixa.Status = db.Status.Find(caixa.StatusId);
-
-                    if (caixa.Status != null)
-                    {
-                        if (caixa.Status.Nome.Equals("Aberto"))
-                        {
-                            caixa.Saldo += movimento.Valor;
-                            db.Caixa.Update(caixa);
-                            db.SaveChanges();
-
-                            movimento.Detalhe = $"Valor {movimento.Valor} creditado com sucesso";
-                            movimento.Sucesso = true;
-                        }
-                        else
-                        {
-                            movimento.Detalhe = $"Caixa {caixa.Status.Nome}";
-
-                            movimento.Sucesso = false;
-                        }
-                    }
+                    movimento.Detalhe = $"Valor a debitar {movimento.Valor * -1} maior que o Saldo {caixa.Saldo}";
+                    movimento.Sucesso = false;
+                }
+                else
+                {
+                    caixa.Saldo = saldo;
+                    movimento.Detalhe = $"Valor {movimento.Valor} movimentado com sucesso";
+                    movimento.Sucesso = true;
                 }
             }
-
+            db.Caixa.Update(caixa);
+            db.SaveChanges();
             movimento.Cadastro = DateTime.Now;
-
             if (ModelState.IsValid)
             {
                 db.Add(movimento);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Details", "Caixas", new { id = movimento.CaixaId });
             }
-
             ViewData["CaixaId"] = new SelectList(db.Caixa, "Id", "Id", movimento.CaixaId);
-
             return View(movimento);
         }
 
