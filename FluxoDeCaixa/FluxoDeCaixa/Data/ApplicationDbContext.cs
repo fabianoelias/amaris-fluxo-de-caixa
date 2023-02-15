@@ -14,5 +14,7 @@ namespace FluxoDeCaixa.Data
             : base(options)
         {
         }
+
+        public ApplicationDbContext() { }
     }
 }

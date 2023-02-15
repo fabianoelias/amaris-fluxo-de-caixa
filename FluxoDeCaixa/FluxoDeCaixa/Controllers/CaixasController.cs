@@ -10,56 +10,60 @@ namespace FluxoDeCaixa.Controllers
     [Authorize]
     public class CaixasController : Controller
     {
+        private Repository<Caixa> DbCaixa;
+        private Repository<Movimento> DbMovimento;
+        private Repository<Status> DbStatus;
         private readonly ApplicationDbContext db;
+
 
         public CaixasController(ApplicationDbContext context)
         {
             db = context;
+            DbCaixa = new Repository<Caixa>(context);
+            DbMovimento = new Repository<Movimento>(context);
+            DbStatus = new Repository<Status>(context);
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var applicationDbContext = db.Caixa.Include(c => c.Status).OrderByDescending(item => item.Id);
-            return View(await applicationDbContext.ToListAsync());
+            return View(DbCaixa.Get.Include(item => item.Status).OrderByDescending(item => item.Id));
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public  ActionResult Details(int? id)
         {
             if (id == null || db.Caixa == null)
             {
                 return NotFound();
             }
 
-            var caixa = await db.Caixa
-                .Include(c => c.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var caixa = DbCaixa.FindById(id);
+
             if (caixa == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Movimentos = db.Movimento.Where(item => item.CaixaId == id).OrderByDescending(item => item.Cadastro).ToList();
+            ViewBag.Movimentos = DbMovimento.Get.Where(item => item.CaixaId == id).OrderByDescending(item => item.Cadastro).ToList();
 
             return View(caixa);
         }
 
         public IActionResult Create()
         {
-            ViewData["StatusId"] = new SelectList(db.Status, "StatusId", "Nome");
+            ViewData["StatusId"] = new SelectList(DbStatus.Get, "StatusId", "Nome");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Saldo,StatusId")] Caixa caixa)
+        public ActionResult Create([Bind("Id,Saldo,StatusId")] Caixa caixa)
         {
             if (ModelState.IsValid)
             {
-                db.Add(caixa);
-                await db.SaveChangesAsync();
+                DbCaixa.Add(caixa);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StatusId"] = new SelectList(db.Status, "StatusId", "Nome", caixa.StatusId);
+            ViewData["StatusId"] = new SelectList(DbStatus.Get, "StatusId", "Nome", caixa.StatusId);
             return View(caixa);
         }
 
