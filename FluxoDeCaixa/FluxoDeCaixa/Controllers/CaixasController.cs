@@ -10,9 +10,9 @@ namespace FluxoDeCaixa.Controllers
     [Authorize]
     public class CaixasController : Controller
     {
-        private Repository<Caixa> DbCaixa;
-        private Repository<Movimento> DbMovimento;
-        private Repository<Status> DbStatus;
+        private readonly Repository<Caixa> DbCaixa;
+        private readonly Repository<Movimento> DbMovimento;
+        private readonly Repository<Status> DbStatus;
         private readonly ApplicationDbContext db;
 
 

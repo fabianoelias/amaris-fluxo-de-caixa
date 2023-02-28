@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 namespace FluxoDeCaixa.Controllers.Tests
 {
     [TestClass()]
-    public class CaixasControllerTests : Controller
+    public class UnitTests : Controller
     {
-        ApplicationDbContext db = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(nameof(Caixa)).Options);
+        readonly ApplicationDbContext db = new(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(nameof(Caixa)).Options);
 
         [TestMethod()]
         public void StatusIndexTest()
@@ -34,13 +34,17 @@ namespace FluxoDeCaixa.Controllers.Tests
 
             if (result != null)
             {
-                List<Status>? model = ((ViewResult)result).Model as List<Status>;
-
-                if (model != null)
+                if (((ViewResult)result).Model is List<Status> model)
                 {
                     Assert.IsTrue(model.Count == 2, $"Expected: 2 - Actual: {model.Count}");
                 }
             }
+        }
+
+        [TestMethod]
+        public void MovimentarTest()
+        {
+
         }
     }
 }

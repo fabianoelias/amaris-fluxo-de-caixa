@@ -36,15 +36,17 @@
                     @Html.DisplayFor(modelItem => item.Saldo)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Status.Nome)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a> |
-                    <a asp-action="Create" asp-controller="Movimentos" asp-route-id="@item.Id">Movimentar</a>
-                </td>
-            </tr>
+                    @if (item.Status != null)
+                        @Html.DisplayFor(modelItem => item.Status.Nome)
+
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a> |
+                        <a asp-action="Create" asp-controller="Movimentos" asp-route-id="@item.Id">Movimentar</a>
+                    </td>
+                </tr>
         }
     </tbody>
 </table>

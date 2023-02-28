@@ -5,7 +5,7 @@ namespace FluxoDeCaixa.Data
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext db;
-        private DbSet<T> dbSet;
+        private readonly DbSet<T> dbSet;
 
         public Repository(ApplicationDbContext applicationDbContext)
         {
