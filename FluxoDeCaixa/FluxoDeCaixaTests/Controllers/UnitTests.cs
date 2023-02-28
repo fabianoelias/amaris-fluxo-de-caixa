@@ -11,9 +11,12 @@ namespace FluxoDeCaixa.Controllers.Tests
     {
         readonly ApplicationDbContext db = new(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(nameof(Caixa)).Options);
 
-        [TestMethod()]
-        public void StatusIndexTest()
+        private void CreateStatus()
         {
+            db.Status.RemoveRange(db.Status);
+
+            db.SaveChanges();
+
             db.Status.Add(new Status()
             {
                 StatusId = 1,
@@ -27,6 +30,37 @@ namespace FluxoDeCaixa.Controllers.Tests
             });
 
             db.SaveChanges();
+        }
+
+        private void CreateCaixa()
+        {
+            CreateStatus();
+
+            db.Caixa.RemoveRange(db.Caixa);
+
+            db.SaveChanges();
+
+            db.Caixa.Add(new Caixa()
+            {
+                Id = 1,
+                Saldo = 100,
+                StatusId = 1
+            });
+
+            db.Caixa.Add(new Caixa()
+            {
+                Id = 2,
+                Saldo = 200,
+                StatusId = 1
+            });
+
+            db.SaveChanges();
+        }
+
+        [TestMethod()]
+        public void StatusIndexTest()
+        {
+            CreateStatus();
 
             var status = new StatusController(db);
 
@@ -42,9 +76,19 @@ namespace FluxoDeCaixa.Controllers.Tests
         }
 
         [TestMethod]
-        public void MovimentarTest()
+        public void ApiCaixaGetCaixaTest()
         {
+            CreateCaixa();
 
+            var caixa = new API.CaixasController(db);
+
+            var result = caixa.GetCaixa().Result;
+
+            if (result != null)
+            {
+                if (result.Value != null)
+                    Assert.IsTrue(result.Value.Count() == 2, $"Expected: 2 - Actual: {result.Value.Count()}");
+            }
         }
     }
 }
