@@ -76,7 +76,7 @@ namespace FluxoDeCaixa.Controllers.Tests
         }
 
         [TestMethod]
-        public void ApiCaixaGetCaixaTest()
+        public void ApiCaixaGetTest()
         {
             CreateCaixa();
 
